@@ -13,6 +13,6 @@ TABLEIDENT : 'Table';
 
 COLUMNTYPE : 'String' | 'Int' | 'Double' | 'Long';
 
-NAME : [A-Z][a-z];
+NAME : [A-Z][a-z]+;
 
 WS : [ \t\r\n]+ -> skip ;

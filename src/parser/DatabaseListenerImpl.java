@@ -23,6 +23,10 @@ public class DatabaseListenerImpl implements DatabaseListener {
 
     private TablesGenaratedCallback callback;
 
+    private Table table;
+
+    private MetaModel metaModel;
+
     String text;
 
     public DatabaseListenerImpl(TablesGenaratedCallback callback) {
@@ -35,31 +39,33 @@ public class DatabaseListenerImpl implements DatabaseListener {
 
     @Override
     public void exitTables(DatabaseParser.TablesContext ctx) {
-        ParseTree parseTree = ctx;
-
-        parseTree.getChild(0);
+        MetaModel metaModel = new MetaModel(tableList);
+        if (callback != null) {
+            callback.onTablesGenerated(metaModel);
+        }
     }
 
     @Override
     public void enterTable(DatabaseParser.TableContext ctx) {
-
-
-
+        table = new Table();
+        columnList = new ArrayList<>();
     }
 
     @Override
     public void exitTable(DatabaseParser.TableContext ctx) {
         ParseTree parseTree = ctx;
+        table.setColumns(columnList);
+        tableList.add(table);
     }
 
     @Override
     public void enterTablename(DatabaseParser.TablenameContext ctx) {
-
     }
 
     @Override
     public void exitTablename(DatabaseParser.TablenameContext ctx) {
         ParseTree parseTree = ctx;
+        table.setTableName(parseTree.getChild(1).toString());
     }
 
     @Override
@@ -70,28 +76,18 @@ public class DatabaseListenerImpl implements DatabaseListener {
     @Override
     public void exitColumn(DatabaseParser.ColumnContext ctx) {
         generateColumn(ctx);
-
-        ctx.COLUMNTYPE().getSymbol().toString();
-        ctx.NAME();
     }
 
-    private Column generateColumn (ParseTree parseTree ) {
+    private void generateColumn (ParseTree parseTree ) {
         Column column = new Column();
         parseTree.getText();
         parseTree.getChild(0);
 
-        column.setName(parseTree.getChild(0).toString());
-        column.setType(ColumnType.DOUBLE);
+        column.setName(parseTree.getChild(1).toString());
+        column.setType(ColumnType.lookup(parseTree.getChild(0).toString()));
 
         columnList.add(column);
 
-        for (int i = 0; i < parseTree.getChildCount()-1; i++) {
-//            System.out.print(parseTree.getChild(i)+ " ;");
-        }
-
-        System.out.println();
-
-        return column;
     }
 
     @Override

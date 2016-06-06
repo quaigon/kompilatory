@@ -23,7 +23,11 @@ public class Table {
 		this.tableName = tableName;
 		this.columns = columns;
 	}
-	
+
+	public Table() {
+
+	}
+
 	/**
 	 * Zwwraca nazwe tabelki
 	 *
