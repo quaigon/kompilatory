@@ -29,7 +29,7 @@ public class Main {
         }
     }
 
-    public void initParser(String filepath) throws IOException {
+    private void initParser(String filepath) throws IOException {
         ANTLRInputStream antlrInputStream = new ANTLRInputStream(new BufferedReader(new FileReader(filepath)));
 
         DatabaseLexer databaseLexer = new DatabaseLexer(antlrInputStream);
@@ -45,7 +45,7 @@ public class Main {
         DatabaseParser.TablesContext tablesContext = databaseParser.tables();
     }
 
-    public static void genarateCode(MetaModel metaModel) {
+    private void genarateCode(MetaModel metaModel) {
         ColumnTypeMapper columnTypeMappper = new H2ColumnTypeMapper();
 
         SQLFileGenerator sqlFileGenerator = new SQLFileGenerator(metaModel, columnTypeMappper);

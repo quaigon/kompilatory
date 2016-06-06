@@ -1,0 +1,10 @@
+Table Tabelka
+Int Id
+Double Pierwszydouble
+String Pierwszystring
+String Drugistring
+
+Table Drugabelka
+Int Id
+String Trzecitring
+String Czwartytring
