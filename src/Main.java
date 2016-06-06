@@ -1,3 +1,5 @@
+import generator.*;
+import generator.model.ColumnType;
 import generator.model.MetaModel;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -6,42 +8,29 @@ import parser.DatabaseListenerImpl;
 import parser.DatabaseParser;
 
 import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringReader;
 
 public class Main {
 
     public static void main(String[] args) {
-        System.out.println("Hello World!");
 
-           generateModel();
+        Main main = new Main();
+        main.generateModel(args[0]);
 
     }
 
-    public static void generateModel ()  {
-
-
+    public void generateModel(String filepath) {
         try {
-            initParser();
+            initParser(filepath);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public static void initParser () throws IOException {
-        String text = "Table Tabelka\n" +
-                "Int Id\n" +
-                "String Lol\n" +
-                "String Lolw\n" +
-                "String Lole\n" +
-                "\n" +
-                "Table Tabelkaa\n" +
-                "Int Id\n" +
-                "String Lolg\n" +
-                "String Lolc\n" +
-                "String Lolg\n";
-
-        ANTLRInputStream antlrInputStream = new ANTLRInputStream(new BufferedReader(new StringReader(text)));
+    public void initParser(String filepath) throws IOException {
+        ANTLRInputStream antlrInputStream = new ANTLRInputStream(new BufferedReader(new FileReader(filepath)));
 
         DatabaseLexer databaseLexer = new DatabaseLexer(antlrInputStream);
         CommonTokenStream commonTokenStream = new CommonTokenStream(databaseLexer);
@@ -49,13 +38,26 @@ public class Main {
         DatabaseListenerImpl databaseListener = new DatabaseListenerImpl(new DatabaseListenerImpl.TablesGenaratedCallback() {
             @Override
             public void onTablesGenerated(MetaModel metamodel) {
-                System.out.print(metamodel.toString());
+                genarateCode(metamodel);
             }
         });
         databaseParser.addParseListener(databaseListener);
         DatabaseParser.TablesContext tablesContext = databaseParser.tables();
     }
 
+    public static void genarateCode(MetaModel metaModel) {
+        ColumnTypeMapper columnTypeMappper = new H2ColumnTypeMapper();
 
-    
+        SQLFileGenerator sqlFileGenerator = new SQLFileGenerator(metaModel, columnTypeMappper);
+        ClassCodeGenerator classCodeGenerator = new ClassCodeGenerator(metaModel);
+        DAOCodeGenerator daoCodeGenerator = new DAOCodeGenerator(metaModel);
+
+
+        sqlFileGenerator.generateFile("sql.sql");
+        classCodeGenerator.generateTableFiles();
+        daoCodeGenerator.generateDaoFiles();
+
+    }
+
+
 }

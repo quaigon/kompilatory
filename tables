@@ -1,0 +1,10 @@
+Table Tabelka
+Int Id
+String Innanazwa
+String Nazwa
+Int Doub
+
+Table Tabelkaa
+Int Id
+Int Nazwy
+Double Jakisdoubel
